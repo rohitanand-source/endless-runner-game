@@ -24,14 +24,24 @@ function App() {
   };
 
   // Keyboard control
-  useEffect(() => {
-    const handleKey = (e) => {
-      if (e.code === "Space") jump();
-    };
+useEffect(() => {
+  const handleKey = (e) => {
+    if (e.code === "Space") {
+      if (!isJumping && !isGameOver) {
+        setIsJumping(true);
+        setPosition(120);
 
-    document.addEventListener("keydown", handleKey);
-    return () => document.removeEventListener("keydown", handleKey);
-  }, [isJumping, isGameOver]);
+        setTimeout(() => {
+          setPosition(0);
+          setIsJumping(false);
+        }, 400);
+      }
+    }
+  };
+
+  document.addEventListener("keydown", handleKey);
+  return () => document.removeEventListener("keydown", handleKey);
+}, [isJumping, isGameOver]);
 
   // Obstacle movement + Score
   useEffect(() => {
