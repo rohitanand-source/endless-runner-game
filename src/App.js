@@ -1,13 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
 
-import player from "./assets/player.png";
-import ob1 from "./assets/ob1.png";
-import ob2 from "./assets/ob2.png";
-
-import jumpSound from "./assets/jump.mp3";
-import hitSound from "./assets/hit.mp3";
-
 function App() {
   const [isJumping, setIsJumping] = useState(false);
   const [position, setPosition] = useState(0);
@@ -15,17 +8,11 @@ function App() {
   const [isGameOver, setIsGameOver] = useState(false);
   const [score, setScore] = useState(0);
   const [speed, setSpeed] = useState(10);
-  const [obstacleType, setObstacleType] = useState(ob1);
   const [highScore, setHighScore] = useState(0);
-
-  const jumpAudio = new Audio(jumpSound);
-  const hitAudio = new Audio(hitSound);
 
   // Jump
   const jump = () => {
     if (isJumping || isGameOver) return;
-
-    jumpAudio.play();
 
     setIsJumping(true);
     setPosition(120);
@@ -36,7 +23,7 @@ function App() {
     }, 400);
   };
 
-  // Key press
+  // Keyboard control
   useEffect(() => {
     const handleKey = (e) => {
       if (e.code === "Space") jump();
@@ -46,7 +33,7 @@ function App() {
     return () => document.removeEventListener("keydown", handleKey);
   }, [isJumping, isGameOver]);
 
-  // Obstacle movement + random + score
+  // Obstacle movement + Score
   useEffect(() => {
     if (isGameOver) return;
 
@@ -54,10 +41,6 @@ function App() {
       setObstacleLeft((prev) => {
         if (prev <= -50) {
           setScore((s) => s + 1);
-
-          // random obstacle
-          setObstacleType(Math.random() > 0.5 ? ob1 : ob2);
-
           return 600;
         }
         return prev - speed;
@@ -67,22 +50,24 @@ function App() {
     return () => clearInterval(interval);
   }, [isGameOver, speed]);
 
-  // Speed increase
+  // Speed increase (FIXED ✅)
   useEffect(() => {
     if (score > 0 && score % 5 === 0) {
-      setSpeed((s) => s + 1);
+      setSpeed((prev) => prev + 1);
     }
   }, [score]);
 
-  // Collision
+  // High Score update (FIXED ✅)
+  useEffect(() => {
+    if (score > highScore) {
+      setHighScore(score);
+    }
+  }, [score, highScore]);
+
+  // Collision detection
   useEffect(() => {
     if (obstacleLeft > 50 && obstacleLeft < 100 && position < 50) {
-      hitAudio.play();
       setIsGameOver(true);
-
-      if (score > highScore) {
-        setHighScore(score);
-      }
     }
   }, [obstacleLeft, position]);
 
@@ -100,19 +85,15 @@ function App() {
 
       <h2>Score: {score} | High Score: {highScore}</h2>
 
-      <img
-        src={player}
+      <div
         className="character"
         style={{ bottom: position + "px" }}
-        alt="player"
-      />
+      ></div>
 
-      <img
-        src={obstacleType}
+      <div
         className="obstacle"
         style={{ left: obstacleLeft + "px" }}
-        alt="obstacle"
-      />
+      ></div>
 
       {isGameOver && (
         <div className="game-over">

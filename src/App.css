@@ -30,8 +30,9 @@
 
 button {
   padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
   background: orange;
   border: none;
   border-radius: 5px;
-  cursor: pointer;
 }
