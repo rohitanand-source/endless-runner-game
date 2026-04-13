@@ -1,122 +1,73 @@
 body {
   margin: 0;
+  background: linear-gradient(#1e1e2f, #3a3a6a);
   font-family: "Poppins", sans-serif;
-  background: linear-gradient(135deg, #1e1e2f, #3a3a6a);
 }
 
-/* Game Container */
 .game {
-  width: 700px;
-  height: 350px;
+  width: 350px;
+  height: 400px;
   margin: 50px auto;
   position: relative;
   overflow: hidden;
-  border-radius: 20px;
-
-  /* Glass Effect */
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(15px);
-  border: 2px solid rgba(255, 255, 255, 0.2);
-
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+  border-radius: 15px;
+  background: #111;
+  border: 3px solid #00ffcc;
 }
 
-/* Title */
-h1 {
-  text-align: center;
-  color: #fff;
-  font-size: 32px;
-  margin-top: 10px;
-}
-
-/* Score */
-h2 {
-  text-align: center;
-  color: #00ffcc;
-  margin: 5px;
-}
-
-/* Character */
-.character {
-  width: 50px;
-  height: 50px;
-  background: linear-gradient(45deg, #ff9a00, #ff3c00);
+/* Lane lines */
+.game::before {
+  content: "";
   position: absolute;
-  left: 60px;
-  bottom: 0;
-  border-radius: 12px;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    to bottom,
+    #222,
+    #222 20px,
+    #333 20px,
+    #333 40px
+  );
+  animation: move 0.5s linear infinite;
+}
 
-  box-shadow: 0 0 15px #ff3c00;
-  transition: bottom 0.25s ease;
+@keyframes move {
+  from { background-position-y: 0; }
+  to { background-position-y: 40px; }
+}
+
+/* Player */
+.player {
+  width: 40px;
+  height: 40px;
+  background: orange;
+  position: absolute;
+  border-radius: 10px;
+  transition: left 0.2s, bottom 0.3s;
 }
 
 /* Obstacle */
 .obstacle {
-  width: 50px;
-  height: 50px;
-  background: linear-gradient(45deg, #00ffcc, #0066ff);
+  width: 40px;
+  height: 40px;
+  background: red;
   position: absolute;
-  bottom: 0;
   border-radius: 8px;
-
-  box-shadow: 0 0 15px #00ccff;
 }
 
-/* Game Over Box */
+/* Game Over */
 .game-over {
   position: absolute;
   top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
-
-  background: rgba(0, 0, 0, 0.6);
-  padding: 20px 30px;
-  border-radius: 15px;
-
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
 }
 
-/* Button */
 button {
-  padding: 12px 25px;
-  font-size: 16px;
-  cursor: pointer;
-
-  background: linear-gradient(45deg, #ff9a00, #ff3c00);
+  padding: 10px 20px;
+  background: orange;
   border: none;
-  border-radius: 8px;
-  color: white;
-
-  box-shadow: 0 0 10px #ff3c00;
-  transition: 0.3s;
-}
-
-button:hover {
-  transform: scale(1.1);
-  box-shadow: 0 0 20px #ff3c00;
-}
-
-.game::before {
-  content: "";
-  position: absolute;
-  width: 200%;
-  height: 100%;
-  background: repeating-linear-gradient(
-    90deg,
-    transparent,
-    transparent 50px,
-    rgba(255, 255, 255, 0.05) 50px,
-    rgba(255, 255, 255, 0.05) 100px
-  );
-  animation: moveBg 5s linear infinite;
-}
-
-@keyframes moveBg {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
+  border-radius: 5px;
+  cursor: pointer;
 }

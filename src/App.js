@@ -2,107 +2,98 @@ import React, { useEffect, useState } from "react";
 import "./App.css";
 
 function App() {
+  const [lane, setLane] = useState(1); // 0 left, 1 center, 2 right
   const [isJumping, setIsJumping] = useState(false);
-  const [position, setPosition] = useState(0);
-  const [obstacleLeft, setObstacleLeft] = useState(600);
+  const [obstacleLane, setObstacleLane] = useState(1);
+  const [obstacleTop, setObstacleTop] = useState(-50);
   const [isGameOver, setIsGameOver] = useState(false);
   const [score, setScore] = useState(0);
-  const [speed, setSpeed] = useState(10);
-  const [highScore, setHighScore] = useState(0);
+
+  // Move Left/Right
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (e.code === "ArrowLeft" && lane > 0) {
+        setLane((prev) => prev - 1);
+      }
+      if (e.code === "ArrowRight" && lane < 2) {
+        setLane((prev) => prev + 1);
+      }
+      if (e.code === "Space") {
+        jump();
+      }
+    };
+
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [lane]);
 
   // Jump
   const jump = () => {
-    if (isJumping || isGameOver) return;
-
+    if (isJumping) return;
     setIsJumping(true);
-    setPosition(120);
 
-    setTimeout(() => {
-      setPosition(0);
-      setIsJumping(false);
-    }, 400);
+    setTimeout(() => setIsJumping(false), 400);
   };
 
-  // Keyboard control
-useEffect(() => {
-  const handleKey = (e) => {
-    if (e.code === "Space") {
-      if (!isJumping && !isGameOver) {
-        setIsJumping(true);
-        setPosition(120);
-
-        setTimeout(() => {
-          setPosition(0);
-          setIsJumping(false);
-        }, 400);
-      }
-    }
-  };
-
-  document.addEventListener("keydown", handleKey);
-  return () => document.removeEventListener("keydown", handleKey);
-}, [isJumping, isGameOver]);
-
-  // Obstacle movement + Score
+  // Obstacle Movement
   useEffect(() => {
     if (isGameOver) return;
 
     const interval = setInterval(() => {
-      setObstacleLeft((prev) => {
-        if (prev <= -50) {
+      setObstacleTop((prev) => {
+        if (prev > 350) {
           setScore((s) => s + 1);
-          return 600;
+          setObstacleLane(Math.floor(Math.random() * 3));
+          return -50;
         }
-        return prev - speed;
+        return prev + 10;
       });
     }, 50);
 
     return () => clearInterval(interval);
-  }, [isGameOver, speed]);
+  }, [isGameOver]);
 
-  // Speed increase (FIXED ✅)
+  // Collision
   useEffect(() => {
-    if (score > 0 && score % 5 === 0) {
-      setSpeed((prev) => prev + 1);
-    }
-  }, [score]);
-
-  // High Score update (FIXED ✅)
-  useEffect(() => {
-    if (score > highScore) {
-      setHighScore(score);
-    }
-  }, [score, highScore]);
-
-  // Collision detection
-  useEffect(() => {
-    if (obstacleLeft > 50 && obstacleLeft < 100 && position < 50) {
+    if (
+      obstacleTop > 250 &&
+      obstacleTop < 300 &&
+      obstacleLane === lane &&
+      !isJumping
+    ) {
       setIsGameOver(true);
     }
-  }, [obstacleLeft, position]);
+  }, [obstacleTop, lane, isJumping]);
 
   // Restart
   const restartGame = () => {
-    setObstacleLeft(600);
-    setIsGameOver(false);
+    setLane(1);
+    setObstacleTop(-50);
     setScore(0);
-    setSpeed(10);
+    setIsGameOver(false);
   };
 
   return (
-    <div className="game" onClick={jump}>
-      <h1>🏃 Runner Game</h1>
+    <div className="game">
+      <h1>🏃 Subway Runner</h1>
+      <h2>Score: {score}</h2>
 
-      <h2>Score: {score} | High Score: {highScore}</h2>
-
+      {/* Player */}
       <div
-        className="character"
-        style={{ bottom: position + "px" }}
+        className="player"
+        style={{
+          left: `${lane * 33 + 10}%`,
+          bottom: isJumping ? "120px" : "0px",
+        }}
       ></div>
 
+      {/* Obstacle */}
       <div
         className="obstacle"
-        style={{ left: obstacleLeft + "px" }}
+        style={{
+          left: `${obstacleLane * 33 + 10}%`,
+          top: obstacleTop + "px",
+        }}
       ></div>
 
       {isGameOver && (
