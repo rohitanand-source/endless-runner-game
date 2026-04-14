@@ -11,7 +11,7 @@ A fun and simple endless runner game built using React.js.
 
 ## 🚀 Live Demo
 
-https://playful-rabanadas-119245.netlify.app/
+https://rushrunnerx.netlify.app/
 
 ## 🛠️ Tech Stack
 
