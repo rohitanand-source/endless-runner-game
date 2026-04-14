@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import "./App.css";
 
 // 🔊 Sounds
 import coinSound from "./assets/coin.mp3";
-import jumpSound from "./assets/jump.mp3";
 import hitSound from "./assets/hit.mp3";
+// jumpSound removed (unused error avoid)
 
 // 🖼️ Images
 import playerImg from "./assets/player.png";
@@ -18,17 +18,17 @@ function App() {
 
   // 🚧 Obstacle
   const [obstacleLane, setObstacleLane] = useState(1);
-  const [obstacleTop, setObstacleTop] = useState(-50);
+  const [obstacleTop, setObstacleTop] = useState(-60);
   const [obstacleType, setObstacleType] = useState(carImg);
 
   // 🪙 Coins
   const [coinLane, setCoinLane] = useState(1);
-  const [coinTop, setCoinTop] = useState(-100);
+  const [coinTop, setCoinTop] = useState(-120);
   const [coins, setCoins] = useState(0);
 
   // ⚡ Power Ups
   const [powerLane, setPowerLane] = useState(1);
-  const [powerTop, setPowerTop] = useState(-150);
+  const [powerTop, setPowerTop] = useState(-180);
   const [hasShield, setHasShield] = useState(false);
   const [isSpeedBoost, setIsSpeedBoost] = useState(false);
 
@@ -39,6 +39,14 @@ function App() {
   const PLAYER_SIZE = 50;
   const OBJECT_SIZE = 50;
 
+  // 🦘 Jump (FIXED with useCallback)
+  const jump = useCallback(() => {
+    if (isJumping || isGameOver) return;
+
+    setIsJumping(true);
+    setTimeout(() => setIsJumping(false), 400);
+  }, [isJumping, isGameOver]);
+
   // 🎮 Keyboard Controls
   useEffect(() => {
     const handleKey = (e) => {
@@ -48,7 +56,7 @@ function App() {
     };
     document.addEventListener("keydown", handleKey);
     return () => document.removeEventListener("keydown", handleKey);
-  }, [lane]);
+  }, [lane, jump]);
 
   // 📱 Swipe Controls
   useEffect(() => {
@@ -82,34 +90,26 @@ function App() {
       document.removeEventListener("touchstart", handleTouchStart);
       document.removeEventListener("touchend", handleTouchEnd);
     };
-  }, [lane, isJumping]);
-
-  // 🦘 Jump
-  const jump = () => {
-    if (isJumping || isGameOver) return;
-    // new Audio(jumpSound).play();
-    setIsJumping(true);
-    setTimeout(() => setIsJumping(false), 400);
-  };
+  }, [lane, jump]);
 
   // 🚧 Obstacle movement
-useEffect(() => {
-  if (isGameOver) return;
+  useEffect(() => {
+    if (isGameOver) return;
 
-  const interval = setInterval(() => {
-    setObstacleTop((prev) => {
-      if (prev > 400) {
-        setScore((s) => s + 1);
-        setObstacleLane(() => Math.floor(Math.random() * 3));
-        setObstacleType(Math.random() > 0.5 ? carImg : barrierImg);
-        return -50;
-      }
-      return prev + (isSpeedBoost ? 15 : 10);
-    });
-  }, 50);
+    const interval = setInterval(() => {
+      setObstacleTop((prev) => {
+        if (prev > 400) {
+          setScore((s) => s + 1);
+          setObstacleLane(() => Math.floor(Math.random() * 3));
+          setObstacleType(Math.random() > 0.5 ? carImg : barrierImg);
+          return -60;
+        }
+        return prev + (isSpeedBoost ? 15 : 10);
+      });
+    }, 50);
 
-  return () => clearInterval(interval);
-}, [isGameOver, isSpeedBoost]);
+    return () => clearInterval(interval);
+  }, [isGameOver, isSpeedBoost]);
 
   // 🪙 Coin movement
   useEffect(() => {
@@ -119,7 +119,7 @@ useEffect(() => {
       setCoinTop((prev) => {
         if (prev > 400) {
           setCoinLane(Math.floor(Math.random() * 3));
-          return -100;
+          return -120;
         }
         return prev + 8;
       });
@@ -136,7 +136,7 @@ useEffect(() => {
       setPowerTop((prev) => {
         if (prev > 400) {
           setPowerLane(Math.floor(Math.random() * 3));
-          return -150;
+          return -180;
         }
         return prev + 7;
       });
@@ -161,9 +161,9 @@ useEffect(() => {
     if (isTouching && !isGameOver) {
       new Audio(coinSound).play();
       setCoins((c) => c + 1);
-      setCoinTop(-100);
+      setCoinTop(-120);
     }
-  }, [coinTop, lane, isJumping, isGameOver]);
+  }, [coinTop, coinLane, lane, isJumping, isGameOver]);
 
   // ⚡ Power collision
   useEffect(() => {
@@ -186,9 +186,9 @@ useEffect(() => {
         setIsSpeedBoost(true);
         setTimeout(() => setIsSpeedBoost(false), 5000);
       }
-      setPowerTop(-150);
+      setPowerTop(-180);
     }
-  }, [powerTop, lane, isJumping, isGameOver]);
+  }, [powerTop, powerLane, lane, isJumping, isGameOver]);
 
   // 💥 Obstacle collision
   useEffect(() => {
@@ -214,20 +214,17 @@ useEffect(() => {
   }, [obstacleTop, obstacleLane, lane, isJumping, isGameOver, hasShield]);
 
   // 🔄 Restart
-const restartGame = () => {
-  setLane(1);
-
-  setObstacleTop(-60); // 👈 थोड़ा ऊपर से start
-  setCoinTop(-120);
-  setPowerTop(-180);
-
-  setCoins(0);
-  setScore(0);
-
-  setHasShield(false);
-  setIsSpeedBoost(false);
-  setIsGameOver(false);
-};
+  const restartGame = () => {
+    setLane(1);
+    setObstacleTop(-60);
+    setCoinTop(-120);
+    setPowerTop(-180);
+    setCoins(0);
+    setScore(0);
+    setHasShield(false);
+    setIsSpeedBoost(false);
+    setIsGameOver(false);
+  };
 
   return (
     <div className="game">
@@ -236,22 +233,22 @@ const restartGame = () => {
       </div>
 
       <div className="status">
-        {hasShield && "🛡️ Shield"}
-        {isSpeedBoost && " ⚡ Speed"}
+        {hasShield && "🛡️ Shield "}
+        {isSpeedBoost && "⚡ Speed"}
       </div>
 
-      {/* 🧍 Player */}
+      {/* Player */}
       <img
         src={playerImg}
         alt="player"
-        className={`player ${isJumping ? "jump" : ""}`}
+        className="player"
         style={{
           left: `${lane * 33 + 10}%`,
           bottom: isJumping ? "120px" : "0px",
         }}
       />
 
-      {/* 🚗 Obstacle */}
+      {/* Obstacle */}
       <img
         src={obstacleType}
         alt="obstacle"
@@ -262,7 +259,7 @@ const restartGame = () => {
         }}
       />
 
-      {/* 🪙 Coin */}
+      {/* Coin */}
       <div
         className="coin"
         style={{
@@ -271,7 +268,7 @@ const restartGame = () => {
         }}
       ></div>
 
-      {/* ⚡ Power */}
+      {/* Power */}
       <div
         className="power"
         style={{
@@ -282,7 +279,7 @@ const restartGame = () => {
 
       {isGameOver && (
         <div className="game-over">
-          <h2>Game Over 😢</h2>
+          <h2>Game Over </h2>
           <button onClick={restartGame}>Restart</button>
         </div>
       )}
