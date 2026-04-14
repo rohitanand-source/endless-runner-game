@@ -87,7 +87,7 @@ function App() {
   // 🦘 Jump
   const jump = () => {
     if (isJumping || isGameOver) return;
-    new Audio(jumpSound).play();
+    // new Audio(jumpSound).play();
     setIsJumping(true);
     setTimeout(() => setIsJumping(false), 400);
   };
