@@ -15,7 +15,6 @@ body {
   border: 3px solid #00ffcc;
 }
 
-/* Lane lines */
 .game::before {
   content: "";
   position: absolute;
@@ -36,26 +35,43 @@ body {
   to { background-position-y: 40px; }
 }
 
-/* Player */
 .player {
-  width: 40px;
-  height: 40px;
-  background: orange;
+  width: 50px;
   position: absolute;
-  border-radius: 10px;
   transition: left 0.2s, bottom 0.3s;
+  filter: drop-shadow(0 0 10px #00ffcc);
+
 }
 
-/* Obstacle */
+.player.jump {
+  transform: scale(1.1);
+}
 .obstacle {
-  width: 40px;
-  height: 40px;
-  background: red;
+  width: 50px;
   position: absolute;
-  border-radius: 8px;
+  transition: top 0.1s linear;
+  filter: drop-shadow(0 0 10px red);
+  pointer-events: none;
 }
 
-/* Game Over */
+.coin {
+  width: 30px;
+  height: 30px;
+  background: gold;
+  position: absolute;
+  border-radius: 50%;
+  box-shadow: 0 0 15px yellow;
+}
+
+.score {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: #00ffcc;
+  font-size: 16px;
+  z-index: 10;
+}
+
 .game-over {
   position: absolute;
   top: 40%;
@@ -70,4 +86,37 @@ button {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+}
+.power {
+  width: 35px;
+  height: 35px;
+  background: purple;
+  position: absolute;
+  border-radius: 50%;
+  box-shadow: 0 0 20px violet;
+}
+
+.status {
+  position: absolute;
+  top: 30px;
+  left: 10px;
+  color: white;
+  font-size: 14px;
+}
+
+.power {
+  width: 35px;
+  height: 35px;
+  background: purple;
+  position: absolute;
+  border-radius: 50%;
+  box-shadow: 0 0 20px violet;
+}
+
+.status {
+  position: absolute;
+  top: 30px;
+  left: 10px;
+  color: white;
+  font-size: 14px;
 }
