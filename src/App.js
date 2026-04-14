@@ -211,7 +211,7 @@ useEffect(() => {
         setIsGameOver(true);
       }
     }
-  }, [obstacleTop, lane, isJumping, isGameOver, hasShield]);
+  }, [obstacleTop, obstacleLane, lane, isJumping, isGameOver, hasShield]);
 
   // 🔄 Restart
 const restartGame = () => {
